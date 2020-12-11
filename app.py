@@ -133,4 +133,4 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     p = int(sys.argv[1])
-    app.run(host='0.0.0.0', port=p)
+    app.run(host='0.0.0.0', port=p, threaded=True)
