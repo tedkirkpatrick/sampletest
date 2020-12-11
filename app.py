@@ -19,7 +19,7 @@ app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'Database process')
 
-#bp = Blueprint('app', __name__)
+bp = Blueprint('app', __name__)
 #with open('config.json') as file:
 #    data = json.load(file)
 
@@ -51,7 +51,7 @@ else:
 
 # Change the implementation of this: you should probably have a separate driver class for interfacing with a db like dynamodb in a different file.
 
-@app.route('/update', methods=['PUT'])
+@bp.route('/update', methods=['PUT'])
 def update():
     headers = request.headers
     # check header here
@@ -74,7 +74,7 @@ def update():
                                 ExpressionAttributeValues=attrvals)
     return response
 
-@app.route('/read', methods=['GET'])
+@bp.route('/read', methods=['GET'])
 def read():
     headers = request.headers
     # check header here
@@ -86,7 +86,7 @@ def read():
     response = table.query(Select='ALL_ATTRIBUTES', KeyConditionExpression=Key(table_id).eq(objkey))
     return response
 
-@app.route('/write', methods=['POST'])
+@bp.route('/write', methods=['POST'])
 def write():
     headers = request.headers
     # check header here
@@ -105,7 +105,7 @@ def write():
         returnval = {"message": "fail"}
     return json.dumps(({table_id: payload[table_id]}, returnval)['returnval' in globals()])
 
-@app.route('/delete', methods=['DELETE'])
+@bp.route('/delete', methods=['DELETE'])
 def delete():
     headers = request.headers
     # check header here
@@ -117,15 +117,15 @@ def delete():
     response = table.delete_item(Key={table_id: objkey})
     return response
 
-@app.route('/health')
+@bp.route('/health')
 def health():
     return Response("", status=200, mimetype="application/json")
 
-@app.route('/readiness')
+@bp.route('/readiness')
 def readiness():
     return Response("", status=200, mimetype="application/json")
 
-#app.register_blueprint(bp, url_prefix='/api/v1/datastore/')
+app.register_blueprint(bp, url_prefix='/api/v1/datastore/')
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
