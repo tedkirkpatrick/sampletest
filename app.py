@@ -19,7 +19,7 @@ app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'Database process')
 
-bp = Blueprint('app', __name__)
+#bp = Blueprint('app', __name__)
 #with open('config.json') as file:
 #    data = json.load(file)
 
@@ -51,7 +51,7 @@ else:
 
 # Change the implementation of this: you should probably have a separate driver class for interfacing with a db like dynamodb in a different file.
 
-@bp.route('/update', methods=['PUT'])
+@route('/update', methods=['PUT'])
 def update():
     headers = request.headers
     # check header here
@@ -74,7 +74,7 @@ def update():
                                 ExpressionAttributeValues=attrvals)
     return response
 
-@bp.route('/read', methods=['GET'])
+@route('/read', methods=['GET'])
 def read():
     headers = request.headers
     # check header here
@@ -86,7 +86,7 @@ def read():
     response = table.query(Select='ALL_ATTRIBUTES', KeyConditionExpression=Key(table_id).eq(objkey))
     return response
 
-@bp.route('/write', methods=['POST'])
+@route('/write', methods=['POST'])
 def write():
     headers = request.headers
     # check header here
@@ -105,7 +105,7 @@ def write():
         returnval = {"message": "fail"}
     return json.dumps(({table_id: payload[table_id]}, returnval)['returnval' in globals()])
 
-@bp.route('/delete', methods=['DELETE'])
+@route('/delete', methods=['DELETE'])
 def delete():
     headers = request.headers
     # check header here
@@ -117,11 +117,11 @@ def delete():
     response = table.delete_item(Key={table_id: objkey})
     return response
 
-@bp.route('/health')
+@route('/health')
 def health():
     return Response("", status=200, mimetype="application/json")
 
-@bp.route('/readiness')
+@route('/readiness')
 def readiness():
     return Response("", status=200, mimetype="application/json")
 
@@ -133,4 +133,4 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     p = int(sys.argv[1])
-    app.run(host='0.0.0.0', port=p, debug=True, threaded=True)
+    app.run('app', host='0.0.0.0', port=p, debug=True, threaded=True)
